@@ -1,0 +1,5 @@
+dill==0.3.7
+imutils==0.5.4
+multiprocess==0.70.15
+numpy==1.21.6
+opencv-python==4.8.1.78
