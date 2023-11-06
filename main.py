@@ -50,7 +50,6 @@ def video_printer(out_queue):
     while True:
         frame, cnts, signal = out_queue.get()
         if signal == NO_MORE_FRAMES_SIGNAL:
-            cv2.destroyAllWindows()
             break
         for c in cnts:
             # compute the bounding box for the contour, draw it on the frame
@@ -74,7 +73,6 @@ def video_printer(out_queue):
 
 if __name__ == '__main__':
     video_url = 'videos/People - 6387.mp4'
-    # out_queue, frames_queue = mp.Pipe()
     frames_queue = mp.Queue()
     out_queue = mp.Queue()
     reader_worker = mp.Process(target=video_reader, args=(video_url, frames_queue))
