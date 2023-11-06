@@ -28,13 +28,13 @@ def video_detector_process(frames_queue, out_queue):
     while True:
         frame, signal = frames_queue.get()
         if signal == NO_MORE_FRAMES_SIGNAL:
-            out_queue.put((frame, None, signal))
+            out_queue.put((frame, [], signal))
             break
         gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if counter == 0:
             prev_frame = gray_frame
             counter += 1
-            out_queue.put((frame, None, ""))
+            out_queue.put((frame, [], ""))
         else:
             diff = cv2.absdiff(gray_frame, prev_frame)
             thresh = cv2.threshold(diff, 25, 255, cv2.THRESH_BINARY)[1]
@@ -52,15 +52,14 @@ def video_printer(out_queue):
         if signal == NO_MORE_FRAMES_SIGNAL:
             cv2.destroyAllWindows()
             break
-        if cnts is not None:
-            for c in cnts:
-                # compute the bounding box for the contour, draw it on the frame
-                (x, y, w, h) = cv2.boundingRect(c)
-                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        for c in cnts:
+            # compute the bounding box for the contour, draw it on the frame
+            (x, y, w, h) = cv2.boundingRect(c)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-                # Blurring the contour's bounding box
-                blured = cv2.GaussianBlur(frame[y:y + h, x:x + w], (43, 43), 0)
-                frame[y:y + h, x:x + w] = blured
+            # Blurring the contour's bounding box
+            blured = cv2.GaussianBlur(frame[y:y + h, x:x + w], (43, 43), 0)
+            frame[y:y + h, x:x + w] = blured
 
         # Update the frame with text (date)
         cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
