@@ -2,15 +2,18 @@ import datetime
 import cv2
 import multiprocessing as mp
 import imutils
+import argparse
 
 NO_MORE_FRAMES_SIGNAL = "NO_MORE_FRAMES"
 
 def video_reader(vidio_path, frames_queue):
     """
-    This function process originalVideo and send to processing
+    This function read the original video and send to video processing
     frame-by-frame.
     """
     video_capture = cv2.VideoCapture(vidio_path)
+    if video_capture is None or not video_capture.isOpened():
+        print("Warning: unable to open video source: '{}', check with os.path.exists()".format(vidio_path))
 
     while True:
         # Capture frame-by-frame
@@ -72,7 +75,13 @@ def video_printer(out_queue):
 
 
 if __name__ == '__main__':
-    video_url = 'videos/People - 6387.mp4'
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-v", "--video", help="path to the video file")
+    args = vars(ap.parse_args())
+    if args.get("video", None) is None:
+        video_url = 'videos/People - 6387.mp4'
+    else:
+        video_url = args["video"]
     frames_queue = mp.Queue()
     out_queue = mp.Queue()
     reader_worker = mp.Process(target=video_reader, args=(video_url, frames_queue))
