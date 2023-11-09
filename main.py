@@ -1,6 +1,7 @@
 import multiprocessing as mp
 import argparse
 
+from constants import PATH_TO_DEFAULT_VIDEO
 from streamer import Streamer
 from detector import Detector
 from presenter import Presenter
@@ -8,12 +9,9 @@ from presenter import Presenter
 if __name__ == '__main__':
     # initialize video_url from user args, if empty the default is 'People - 6387.mp4'
     ap = argparse.ArgumentParser()
-    ap.add_argument("-v", "--video", help="path to the video file")
+    ap.add_argument("-v", "--video", default=PATH_TO_DEFAULT_VIDEO, help="path to the video file")
     args = vars(ap.parse_args())
-    if args.get("video", None) is None:
-        video_url = 'videos/People - 6387.mp4'
-    else:
-        video_url = args["video"]
+    video_url = args["video"]
 
     # initialize queue for communication between processes
     frames_queue = mp.Queue()
