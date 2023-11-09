@@ -38,7 +38,7 @@ class Detector:
                 self._push_frame_data(frame, time_offset, [], None)
             else:
                 # This algorithm on how we find contours have been given with the requirements.
-                # more info:
+                # more info about the algorithm:
                 # https://pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 
                 diff = cv2.absdiff(gray_frame, prev_frame)

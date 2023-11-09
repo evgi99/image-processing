@@ -35,7 +35,7 @@ if __name__ == '__main__':
     processing_worker.start()
     video_printer_worker.start()
 
-    # when done, terminate all processes (end-of-video or Interrupt)
+    # when done, terminate all processes
     is_done = main_queue.get()
     reader_worker.terminate()
     processing_worker.terminate()

@@ -43,6 +43,7 @@ class Streamer:
             # Push all the frame metadata to the queue
             self._push_frame_data(frame, time_offset, None)
 
+        # release the video stream pointer
         video_capture.release()
 
     def _push_frame_data(self, frame, time_offset, signal):

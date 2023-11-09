@@ -20,7 +20,7 @@ class Presenter:
         self._main_queue = main_queue
 
     def run_job(self):
-        last_frame_display_ts = datetime.datetime.now()
+        first_frame_display_ts = datetime.datetime.now()
         while True:
             frame, time_offset, cnts, signal = self._consume_output_data()
             if signal == NO_MORE_FRAMES_SIGNAL:
@@ -29,23 +29,29 @@ class Presenter:
                 # if the contour is too small, ignore it
                 if cv2.contourArea(c) < MIN_AREA_SIZE:
                     continue
+
                 # compute the bounding box for the contour, draw it on the frame
                 (x, y, w, h) = cv2.boundingRect(c)
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+                # add blurring on the contour's bounding box
                 frame = self._blur_the_contour(frame, x, y, w, h)
 
             # Update the frame with text (date)
             cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
                         (10, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 0)
 
+            # used to keep the correct fps
             time_offset = datetime.timedelta(milliseconds=time_offset)
-            while datetime.datetime.now() - last_frame_display_ts < time_offset:
+            while datetime.datetime.now() - first_frame_display_ts < time_offset:
                 pass
 
             # show the frames
             cv2.imshow("video", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+        # close any open windows and notify main to terminate all process
         cv2.destroyAllWindows()
         self._notify_kill()
 
